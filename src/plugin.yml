@@ -1,0 +1,7 @@
+name: QuickBoard
+author: The_TadeSK
+version: 4.1.1
+main: me.tade.quickboard.QuickBoard
+commands:
+   quickboard:
+      aliases: [qb, board, quickb, qbr, gbd]

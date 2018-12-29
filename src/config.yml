@@ -1,0 +1,9 @@
+scoreboard:
+   MVdWPlaceholderAPI: false
+   onjoin:
+     use: true
+messages:
+   noperms: '&7[&6QuickBoard&7] &cYou don''t have permission to perform this command!'
+   ontoggle:
+      on: '&7[&6QuickBoard&7] You toggled scoreboard &aon'
+      off: '&7[&6QuickBoard&7] You toggled scoreboard &coff'
