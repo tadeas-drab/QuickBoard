@@ -192,7 +192,7 @@ public class PlayerBoard {
     public String setHolders(String s) {
         s = s.replace("{PLAYER}", getPlayer().getName()).replace("{ONLINE}", Bukkit.getOnlinePlayers().size() + "")
                 .replace("{TIME}", getPlayer().getWorld().getTime() + "");
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI").isEnabled() && PlaceholderAPI.containsPlaceholders(s))
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI") && PlaceholderAPI.containsPlaceholders(s))
             s = PlaceholderAPI.setPlaceholders(getPlayer(), s);
         if (QuickBoard.instance.isMVdWPlaceholderAPI())
             s = be.maximvdw.placeholderapi.PlaceholderAPI.replacePlaceholders(getPlayer(), s);
