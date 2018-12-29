@@ -25,23 +25,13 @@ public class QuickBoard extends JavaPlugin implements Listener {
     public List<PlayerBoard> allboards = new ArrayList<>();
     public HashMap<String, ScoreboardInfo> info = new HashMap<>();
     private boolean allowedJoinScoreboard;
-    private boolean MVdWPlaceholderAPI = false;
+    private boolean MVdWPlaceholderAPI, PlaceholderAPI = false;
     private HashMap<Player, Long> playerWorldTimer = new HashMap<>();
 
     @Override
     public void onEnable() {
         instance = this;
 
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
-            getLogger().info("------------------------------");
-            getLogger().info("          QuickBoard          ");
-            getLogger().info("ERROR: Plugin 'PlaceholderAPI' not found");
-            getLogger().info("Disabling...");
-            getLogger().info("          QuickBoard          ");
-            getLogger().info("------------------------------");
-            this.getPluginLoader().disablePlugin(this);
-            return;
-        }
         Metrics metrics = new Metrics(this);
 
         getLogger().info("------------------------------");
@@ -77,10 +67,16 @@ public class QuickBoard extends JavaPlugin implements Listener {
 
         allowedJoinScoreboard = getConfig().getBoolean("scoreboard.onjoin.use");
         MVdWPlaceholderAPI = getConfig().getBoolean("scoreboard.MVdWPlaceholderAPI");
+        PlaceholderAPI = getConfig().getBoolean("scoreboard.PlaceholderAPI");
 
         if (isMVdWPlaceholderAPI()) {
             if (!Bukkit.getPluginManager().isPluginEnabled("MVdWPlaceholderAPI")) {
                 setMVdWPlaceholderAPI(false);
+            }
+        }
+        if (isPlaceholderAPI()) {
+            if (!Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+                setPlaceholderAPI(false);
             }
         }
 
@@ -233,7 +229,15 @@ public class QuickBoard extends JavaPlugin implements Listener {
         return MVdWPlaceholderAPI;
     }
 
+    public boolean isPlaceholderAPI() {
+        return PlaceholderAPI;
+    }
+
     public void setMVdWPlaceholderAPI(boolean MVdWPlaceholderAPI) {
         this.MVdWPlaceholderAPI = MVdWPlaceholderAPI;
+    }
+
+    public void setPlaceholderAPI(boolean PlaceholderAPI) {
+        this.PlaceholderAPI = PlaceholderAPI;
     }
 }
