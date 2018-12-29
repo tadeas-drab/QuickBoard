@@ -1,5 +1,6 @@
 scoreboard:
    MVdWPlaceholderAPI: false
+   PlaceholderAPI: true
    onjoin:
      use: true
 messages:
