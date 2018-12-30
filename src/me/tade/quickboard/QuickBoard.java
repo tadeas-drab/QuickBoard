@@ -27,6 +27,7 @@ public class QuickBoard extends JavaPlugin implements Listener {
     private boolean allowedJoinScoreboard;
     private boolean MVdWPlaceholderAPI, PlaceholderAPI = false;
     private HashMap<Player, Long> playerWorldTimer = new HashMap<>();
+    private PluginUpdater pluginUpdater;
 
     @Override
     public void onEnable() {
@@ -38,6 +39,8 @@ public class QuickBoard extends JavaPlugin implements Listener {
         getLogger().info("          QuickBoard          ");
         Bukkit.getPluginManager().registerEvents(this, this);
         getLogger().info("Listeners registered");
+
+        pluginUpdater = new PluginUpdater(this);
 
         getLogger().info("Loading scoreboards");
 
@@ -126,9 +129,16 @@ public class QuickBoard extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
-        final Player p = e.getPlayer();
+        final Player player = e.getPlayer();
 
-        playerWorldTimer.put(p, System.currentTimeMillis() + 5000);
+        playerWorldTimer.put(player, System.currentTimeMillis() + 5000);
+
+        if(!pluginUpdater.needUpdate())
+            return;
+
+        if(player.isOp() || player.hasPermission("quickboard.update,info")){
+            sendUpdateMessage();
+        }
     }
 
     @EventHandler
@@ -239,5 +249,21 @@ public class QuickBoard extends JavaPlugin implements Listener {
 
     public void setPlaceholderAPI(boolean PlaceholderAPI) {
         this.PlaceholderAPI = PlaceholderAPI;
+    }
+
+    public void sendUpdateMessage(){
+        new BukkitRunnable(){
+            @Override
+            public void run() {
+                for(Player player : Bukkit.getOnlinePlayers()){
+                    if(player.isOp() || player.hasPermission("quickboard.update,info")){
+                        player.sendMessage(" ");
+                        player.sendMessage("§7[§6QuickBoard§7]  §6A new update has come! Released on §a" + pluginUpdater.getUpdateInfo()[1]);
+                        player.sendMessage("§7[§6QuickBoard§7]  §6New version number/your current version §a" + pluginUpdater.getUpdateInfo()[0] + "§7/§c" + getDescription().getVersion());
+                        player.sendMessage("§7[§6QuickBoard§7]  §6Download update here: §ahttps://www.spigotmc.org/resources/15057/");
+                    }
+                }
+            }
+        }.runTaskLater(this, 20);
     }
 }
