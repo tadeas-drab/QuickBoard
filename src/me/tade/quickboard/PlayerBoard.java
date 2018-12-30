@@ -20,6 +20,8 @@ import java.util.List;
 
 public class PlayerBoard {
 
+    private QuickBoard plugin;
+
     private Scoreboard board;
     private Objective score;
     private Player player;
@@ -44,7 +46,8 @@ public class PlayerBoard {
     private int index = 15;
     private int titleindex = 0;
 
-    public PlayerBoard(Player player, ScoreboardInfo info) {
+    public PlayerBoard(QuickBoard plugin, Player player, ScoreboardInfo info) {
+        this.plugin = plugin;
         this.player = player;
         list = info.getText();
         title = info.getTitle();
@@ -65,7 +68,8 @@ public class PlayerBoard {
         }
     }
 
-    public PlayerBoard(Player player, List<String> text, List<String> title, int updateTitle, int updateText) {
+    public PlayerBoard(QuickBoard plugin, Player player, List<String> text, List<String> title, int updateTitle, int updateText) {
+        this.plugin = plugin;
         this.player = player;
         this.updateTitle = updateTitle;
         this.updateText = updateText;
@@ -81,14 +85,14 @@ public class PlayerBoard {
     }
 
     public void startSetup(final PlayerReceiveBoardEvent event) {
-        if (QuickBoard.instance.boards.containsKey(getPlayer())) {
-            QuickBoard.instance.boards.get(getPlayer()).remove();
+        if (plugin.getBoards().containsKey(getPlayer())) {
+            plugin.getBoards().get(getPlayer()).remove();
         }
         ver13 = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3].contains("13");
         colorize();
         titleindex = event.getTitle().size();
-        QuickBoard.instance.boards.put(getPlayer(), this);
-        QuickBoard.instance.allboards.add(this);
+        plugin.getBoards().put(getPlayer(), this);
+        plugin.getAllboards().add(this);
 
         buildScoreboard(event);
 
@@ -194,7 +198,7 @@ public class PlayerBoard {
                 .replace("{TIME}", getPlayer().getWorld().getTime() + "");
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI") && PlaceholderAPI.containsPlaceholders(s))
             s = PlaceholderAPI.setPlaceholders(getPlayer(), s);
-        if (QuickBoard.instance.isMVdWPlaceholderAPI())
+        if (plugin.isMVdWPlaceholderAPI())
             s = be.maximvdw.placeholderapi.PlaceholderAPI.replacePlaceholders(getPlayer(), s);
 
         s = ChatColor.translateAlternateColorCodes('&', s);
@@ -226,8 +230,8 @@ public class PlayerBoard {
 
     public void remove() {
         stopTasks();
-        QuickBoard.instance.boards.remove(getPlayer());
-        QuickBoard.instance.allboards.remove(this);
+        plugin.getBoards().remove(getPlayer());
+        plugin.getAllboards().remove(this);
         getPlayer().setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
     }
 
@@ -240,13 +244,13 @@ public class PlayerBoard {
     }
 
     public void updater() {
-        titleTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(QuickBoard.instance, new Runnable() {
+        titleTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
             public void run() {
                 updateTitle();
             }
         }, 0, updateTitle);
 
-        textTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(QuickBoard.instance, new Runnable() {
+        textTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
             public void run() {
                 updateText();
             }
@@ -268,7 +272,7 @@ public class PlayerBoard {
                         chanText.put(s, text.get(ta));
                         updateText();
                     }
-                }.runTaskTimer(QuickBoard.instance, 1, inter);
+                }.runTaskTimer(plugin, 1, inter);
 
                 tasks.add(task.getTaskId());
             }
@@ -284,7 +288,7 @@ public class PlayerBoard {
                         scrollerText.put(s, text.next());
                         updateText();
                     }
-                }.runTaskTimer(QuickBoard.instance, 1, inter);
+                }.runTaskTimer(plugin, 1, inter);
 
                 tasks.add(task.getTaskId());
             }

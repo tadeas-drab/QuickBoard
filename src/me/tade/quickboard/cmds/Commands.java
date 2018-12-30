@@ -18,11 +18,17 @@ import java.util.List;
 
 public class Commands implements CommandExecutor {
 
+    private QuickBoard plugin;
+
+    public Commands(QuickBoard plugin) {
+        this.plugin = plugin;
+    }
+
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (args.length == 0) {
             sender.sendMessage("§7[§6QuickBoard§7] §7Welcome §6" + sender.getName() + " §7to the QuickBoard commands!");
             sender.sendMessage("§7[§6QuickBoard§7] §7To show all commands use §6/quickboard cmds");
-            sender.sendMessage("§7[§6QuickBoard§7] §7Plugin by §6The_TadeSK§7, version: §6" + QuickBoard.instance.getDescription().getVersion());
+            sender.sendMessage("§7[§6QuickBoard§7] §7Plugin by §6The_TadeSK§7, version: §6" + plugin.getDescription().getVersion());
             return true;
         }
         if (args[0].equalsIgnoreCase("cmds")) {
@@ -35,63 +41,63 @@ public class Commands implements CommandExecutor {
         }
         if (args[0].equalsIgnoreCase("toggle")) {
             if (!(sender instanceof Player)) {
-                sender.sendMessage(QuickBoard.instance.getConfig().getString("messages.noperms").replace("&", "§"));
+                sender.sendMessage(plugin.getConfig().getString("messages.noperms").replace("&", "§"));
                 return true;
             }
             Player p = (Player) sender;
             String text = "";
-            if (QuickBoard.instance.boards.containsKey(p)) {
-                QuickBoard.instance.boards.get(p).remove();
-                text = QuickBoard.instance.getConfig().getString("messages.ontoggle.false");
+            if (plugin.getBoards().containsKey(p)) {
+                plugin.getBoards().get(p).remove();
+                text = plugin.getConfig().getString("messages.ontoggle.false");
             } else {
-                text = QuickBoard.instance.getConfig().getString("messages.ontoggle.true");
+                text = plugin.getConfig().getString("messages.ontoggle.true");
 
-                QuickBoard.instance.createDefaultScoreboard(p);
+                plugin.createDefaultScoreboard(p);
             }
             p.sendMessage(text.replace("&", "§"));
         }
         if (args[0].equalsIgnoreCase("on")) {
             if (!(sender instanceof Player)) {
-                sender.sendMessage(QuickBoard.instance.getConfig().getString("messages.noperms").replace("&", "§"));
+                sender.sendMessage(plugin.getConfig().getString("messages.noperms").replace("&", "§"));
                 return true;
             }
             Player p = (Player) sender;
             String text = "";
-            if (QuickBoard.instance.boards.containsKey(p)) {
-                QuickBoard.instance.boards.get(p).remove();
-                QuickBoard.instance.boards.remove(p);
+            if (plugin.getBoards().containsKey(p)) {
+                plugin.getBoards().get(p).remove();
+                plugin.getBoards().remove(p);
             }
-            if (!QuickBoard.instance.boards.containsKey(p)) {
-                text = QuickBoard.instance.getConfig().getString("messages.ontoggle.true");
+            if (!plugin.getBoards().containsKey(p)) {
+                text = plugin.getConfig().getString("messages.ontoggle.true");
 
-                QuickBoard.instance.createDefaultScoreboard(p);
+                plugin.createDefaultScoreboard(p);
             }
             p.sendMessage(text.replace("&", "§"));
         }
         if (args[0].equalsIgnoreCase("list")) {
             if (!sender.hasPermission("quickboard.edit")) {
-                sender.sendMessage(QuickBoard.instance.getConfig().getString("messages.noperms").replace("&", "§"));
+                sender.sendMessage(plugin.getConfig().getString("messages.noperms").replace("&", "§"));
                 return true;
             }
-            File fo = new File(QuickBoard.instance.getDataFolder().getAbsolutePath() + "/scoreboards");
-            QuickBoard.instance.loadScoreboards(fo);
+            File fo = new File(plugin.getDataFolder().getAbsolutePath() + "/scoreboards");
+            plugin.loadScoreboards(fo);
             sender.sendMessage("§cAll Loaded scoreboards:");
-            for (String name : QuickBoard.instance.info.keySet()) {
+            for (String name : plugin.getInfo().keySet()) {
                 sender.sendMessage("§a- '" + name + "'");
             }
         }
         if (args[0].equalsIgnoreCase("check")) {
             if (!sender.hasPermission("quickboard.check")) {
-                sender.sendMessage(QuickBoard.instance.getConfig().getString("messages.noperms").replace("&", "§"));
+                sender.sendMessage(plugin.getConfig().getString("messages.noperms").replace("&", "§"));
                 return true;
             }
             Player player = (Player) sender;
-            File fo = new File(QuickBoard.instance.getDataFolder().getAbsolutePath() + "/scoreboards");
-            QuickBoard.instance.loadScoreboards(fo);
+            File fo = new File(plugin.getDataFolder().getAbsolutePath() + "/scoreboards");
+            plugin.loadScoreboards(fo);
             sender.sendMessage("§cScoreboard and info:");
-            for (String s : QuickBoard.instance.info.keySet()) {
+            for (String s : plugin.getInfo().keySet()) {
                 String output = "Scoreboard='" + s + "'";
-                ScoreboardInfo in = QuickBoard.instance.info.get(s);
+                ScoreboardInfo in = plugin.getInfo().get(s);
                 output += " in enabled worlds=" + (in.getEnabledWorlds() != null && in.getEnabledWorlds().contains(player.getWorld().getName()));
                 output += " has permission=" + player.hasPermission(s);
                 sender.sendMessage(output);
@@ -99,7 +105,7 @@ public class Commands implements CommandExecutor {
         }
         if (args[0].equalsIgnoreCase("set")) {
             if (!sender.hasPermission("quickboard.set")) {
-                sender.sendMessage(QuickBoard.instance.getConfig().getString("messages.noperms").replace("&", "§"));
+                sender.sendMessage(plugin.getConfig().getString("messages.noperms").replace("&", "§"));
                 return false;
             }
             if (args.length != 3) {
@@ -112,46 +118,46 @@ public class Commands implements CommandExecutor {
                 return true;
             }
             String perm = args[2];
-            if (!QuickBoard.instance.info.containsKey(perm)) {
+            if (!plugin.getInfo().containsKey(perm)) {
                 sender.sendMessage("§cScoreboard doesn't exists!");
                 return true;
             }
-            if (QuickBoard.instance.boards.containsKey(p)) {
-                ScoreboardInfo in = QuickBoard.instance.info.get(perm);
-                QuickBoard.instance.boards.get(p).createNew(in.getText(), in.getTitle(), in.getTitleUpdate(), in.getTextUpdate());
+            if (plugin.getBoards().containsKey(p)) {
+                ScoreboardInfo in = plugin.getInfo().get(perm);
+                plugin.getBoards().get(p).createNew(in.getText(), in.getTitle(), in.getTitleUpdate(), in.getTextUpdate());
             } else {
-                new PlayerBoard(p, QuickBoard.instance.info.get(perm));
+                new PlayerBoard(plugin, p, plugin.getInfo().get(perm));
             }
         }
         if (args[0].equalsIgnoreCase("reload")) {
             if (!sender.hasPermission("quickboard.reload")) {
-                sender.sendMessage(QuickBoard.instance.getConfig().getString("messages.noperms").replace("&", "§"));
+                sender.sendMessage(plugin.getConfig().getString("messages.noperms").replace("&", "§"));
                 return true;
             }
             sender.sendMessage("§7[§6QuickBoard§7] §cReloading config file");
-            QuickBoard.instance.reloadConfig();
-            File fo = new File(QuickBoard.instance.getDataFolder().getAbsolutePath() + "/scoreboards");
-            QuickBoard.instance.loadScoreboards(fo);
+            plugin.reloadConfig();
+            File fo = new File(plugin.getDataFolder().getAbsolutePath() + "/scoreboards");
+            plugin.loadScoreboards(fo);
             sender.sendMessage("§7[§6QuickBoard§7] §aConfig file reloaded");
             sender.sendMessage("§7[§6QuickBoard§7] §cCreating scoreboard for all players");
             sender.sendMessage(" ");
-            QuickBoard.instance.setAllowedJoinScoreboard(QuickBoard.instance.getConfig().getBoolean("scoreboard.onjoin.use"));
-            if (!QuickBoard.instance.isAllowedJoinScoreboard()) {
+            plugin.setAllowedJoinScoreboard(plugin.getConfig().getBoolean("scoreboard.onjoin.use"));
+            if (!plugin.isAllowedJoinScoreboard()) {
                 sender.sendMessage("§7[§6QuickBoard§7] §cCreating scoreboard failed! Creating scoreboard when player join to server is cancelled!");
                 return true;
             }
             for (Player p : Bukkit.getOnlinePlayers()) {
-                if (QuickBoard.instance.boards.containsKey(p)) {
-                    QuickBoard.instance.boards.get(p).remove();
-                    QuickBoard.instance.boards.remove(p);
+                if (plugin.getBoards().containsKey(p)) {
+                    plugin.getBoards().get(p).remove();
+                    plugin.getBoards().remove(p);
                 }
-                QuickBoard.instance.createDefaultScoreboard(p);
+                plugin.createDefaultScoreboard(p);
             }
             sender.sendMessage("§7[§6QuickBoard§7] §aScoreboard created for all");
         }
         if (args[0].equalsIgnoreCase("create")) {
             if (!sender.hasPermission("quickboard.create")) {
-                sender.sendMessage(QuickBoard.instance.getConfig().getString("messages.noperms").replace("&", "§"));
+                sender.sendMessage(plugin.getConfig().getString("messages.noperms").replace("&", "§"));
                 return true;
             }
             if (!(sender instanceof Player)) {
@@ -159,7 +165,7 @@ public class Commands implements CommandExecutor {
                 return true;
             }
             Player player = (Player) sender;
-            File def = new File(QuickBoard.instance.getDataFolder().getAbsolutePath() + "/scoreboards");
+            File def = new File(plugin.getDataFolder().getAbsolutePath() + "/scoreboards");
             if (args.length < 2) {
                 sender.sendMessage("§7[§6QuickBoard§7] §cUse /qb create <Permission(Name)>");
                 return true;
@@ -190,14 +196,14 @@ public class Commands implements CommandExecutor {
         }
         if (args[0].equalsIgnoreCase("edit")) {
             if (!sender.hasPermission("quickboard.edit")) {
-                sender.sendMessage(QuickBoard.instance.getConfig().getString("messages.noperms").replace("&", "§"));
+                sender.sendMessage(plugin.getConfig().getString("messages.noperms").replace("&", "§"));
                 return true;
             }
             if (!(sender instanceof Player)) {
                 sender.sendMessage("You must be player to perform this command!");
                 return true;
             }
-            File def = new File(QuickBoard.instance.getDataFolder().getAbsolutePath() + "/scoreboards");
+            File def = new File(plugin.getDataFolder().getAbsolutePath() + "/scoreboards");
             if (args.length <= 2) {
                 sender.sendMessage("§7[§6QuickBoard§7] §cUse /qb edit <Permission(Name)>");
                 return true;
@@ -238,19 +244,7 @@ public class Commands implements CommandExecutor {
                     cfg.set("text", text);
                     sender.sendMessage("§7[§6QuickBoard§7] §aAdded line '" + line + "'!");
                 }
-                try {
-                    cfg.save(boardFile);
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                QuickBoard.instance.loadScoreboards(def);
-                if (QuickBoard.instance.boards.containsKey(sender)) {
-                    ScoreboardInfo in = QuickBoard.instance.info.get(name);
-                    QuickBoard.instance.boards.get(sender).createNew(in.getText(), in.getTitle(), in.getTitleUpdate(), in.getTextUpdate());
-                } else {
-                    new PlayerBoard(((Player) sender), QuickBoard.instance.info.get(name));
-                }
+                saveFileAndCreateBoard(cfg, boardFile, (Player) sender, name);
             } else if (args[2].equalsIgnoreCase("removeline")) {
                 if (args.length < 4) {
                     sender.sendMessage("§7[§6QuickBoard§7] §cPlease specify a number!");
@@ -274,19 +268,7 @@ public class Commands implements CommandExecutor {
                     } else {
                         sender.sendMessage("§7[§6QuickBoard§7] §cYou are out of bound!");
                     }
-                    try {
-                        cfg.save(boardFile);
-                    } catch (IOException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                    QuickBoard.instance.loadScoreboards(def);
-                    if (QuickBoard.instance.boards.containsKey(sender)) {
-                        ScoreboardInfo in = QuickBoard.instance.info.get(name);
-                        QuickBoard.instance.boards.get(sender).createNew(in.getText(), in.getTitle(), in.getTitleUpdate(), in.getTextUpdate());
-                    } else {
-                        new PlayerBoard(((Player) sender), QuickBoard.instance.info.get(name));
-                    }
+                    saveFileAndCreateBoard(cfg, boardFile, (Player) sender, name);
                 }
             } else if (args[2].equalsIgnoreCase("insertline")) {
                 if (args.length < 5) {
@@ -336,19 +318,7 @@ public class Commands implements CommandExecutor {
                         sender.sendMessage("§7[§6QuickBoard§7] §cYou are out of bound!");
                     }
                 }
-                try {
-                    cfg.save(boardFile);
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                QuickBoard.instance.loadScoreboards(def);
-                if (QuickBoard.instance.boards.containsKey(sender)) {
-                    ScoreboardInfo in = QuickBoard.instance.info.get(name);
-                    QuickBoard.instance.boards.get(sender).createNew(in.getText(), in.getTitle(), in.getTitleUpdate(), in.getTextUpdate());
-                } else {
-                    new PlayerBoard(((Player) sender), QuickBoard.instance.info.get(name));
-                }
+                saveFileAndCreateBoard(cfg, boardFile, (Player) sender, name);
             }
 
             //Title
@@ -370,19 +340,7 @@ public class Commands implements CommandExecutor {
                     cfg.set("title", text);
                     sender.sendMessage("§7[§6QuickBoard§7] §aAdded line '" + line + "'!");
                 }
-                try {
-                    cfg.save(boardFile);
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                QuickBoard.instance.loadScoreboards(def);
-                if (QuickBoard.instance.boards.containsKey(sender)) {
-                    ScoreboardInfo in = QuickBoard.instance.info.get(name);
-                    QuickBoard.instance.boards.get(sender).createNew(in.getText(), in.getTitle(), in.getTitleUpdate(), in.getTextUpdate());
-                } else {
-                    new PlayerBoard(((Player) sender), QuickBoard.instance.info.get(name));
-                }
+                saveFileAndCreateBoard(cfg, boardFile, (Player) sender, name);
             } else if (args[2].equalsIgnoreCase("removetitle")) {
                 if (args.length < 4) {
                     sender.sendMessage("§7[§6QuickBoard§7] §cPlease specify a number!");
@@ -406,19 +364,7 @@ public class Commands implements CommandExecutor {
                     } else {
                         sender.sendMessage("§7[§6QuickBoard§7] §cYou are out of bound!");
                     }
-                    try {
-                        cfg.save(boardFile);
-                    } catch (IOException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                    QuickBoard.instance.loadScoreboards(def);
-                    if (QuickBoard.instance.boards.containsKey(sender)) {
-                        ScoreboardInfo in = QuickBoard.instance.info.get(name);
-                        QuickBoard.instance.boards.get(sender).createNew(in.getText(), in.getTitle(), in.getTitleUpdate(), in.getTextUpdate());
-                    } else {
-                        new PlayerBoard(((Player) sender), QuickBoard.instance.info.get(name));
-                    }
+                    saveFileAndCreateBoard(cfg, boardFile, (Player) sender, name);
                 }
             } else if (args[2].equalsIgnoreCase("inserttitle")) {
                 if (args.length < 5) {
@@ -468,22 +414,27 @@ public class Commands implements CommandExecutor {
                         sender.sendMessage("§7[§6QuickBoard§7] §cYou are out of bound!");
                     }
                 }
-                try {
-                    cfg.save(boardFile);
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                QuickBoard.instance.loadScoreboards(def);
-                if (QuickBoard.instance.boards.containsKey(sender)) {
-                    ScoreboardInfo in = QuickBoard.instance.info.get(name);
-                    QuickBoard.instance.boards.get(sender).createNew(in.getText(), in.getTitle(), in.getTitleUpdate(), in.getTextUpdate());
-                } else {
-                    new PlayerBoard(((Player) sender), QuickBoard.instance.info.get(name));
-                }
+                saveFileAndCreateBoard(cfg, boardFile, (Player) sender, name);
             }
         }
         return false;
+    }
+
+    public void saveFileAndCreateBoard(YamlConfiguration config, File file, Player player, String name){
+        File def = new File(plugin.getDataFolder().getAbsolutePath() + "/scoreboards");
+        try {
+            config.save(file);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        plugin.loadScoreboards(def);
+        if (plugin.getBoards().containsKey(player)) {
+            ScoreboardInfo in = plugin.getInfo().get(name);
+            plugin.getBoards().get(player).createNew(in.getText(), in.getTitle(), in.getTitleUpdate(), in.getTextUpdate());
+        } else {
+            new PlayerBoard(plugin, player, plugin.getInfo().get(name));
+        }
     }
 
 }

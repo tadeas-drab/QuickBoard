@@ -1,6 +1,6 @@
 name: QuickBoard
 author: The_TadeSK
-version: 4.1.2
+version: 4.2.0
 main: me.tade.quickboard.QuickBoard
 commands:
    quickboard:

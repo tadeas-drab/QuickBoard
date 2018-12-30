@@ -1,5 +1,6 @@
 package me.tade.quickboard;
 
+import me.tade.quickboard.api.QuickBoardAPI;
 import me.tade.quickboard.cmds.Commands;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -20,10 +21,9 @@ import java.util.List;
 
 public class QuickBoard extends JavaPlugin implements Listener {
 
-    public static QuickBoard instance;
-    public HashMap<Player, PlayerBoard> boards = new HashMap<>();
-    public List<PlayerBoard> allboards = new ArrayList<>();
-    public HashMap<String, ScoreboardInfo> info = new HashMap<>();
+    private HashMap<Player, PlayerBoard> boards = new HashMap<>();
+    private List<PlayerBoard> allboards = new ArrayList<>();
+    private HashMap<String, ScoreboardInfo> info = new HashMap<>();
     private boolean allowedJoinScoreboard;
     private boolean MVdWPlaceholderAPI, PlaceholderAPI = false;
     private HashMap<Player, Long> playerWorldTimer = new HashMap<>();
@@ -31,9 +31,9 @@ public class QuickBoard extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        instance = this;
-
         Metrics metrics = new Metrics(this);
+
+        new QuickBoardAPI(this);
 
         getLogger().info("------------------------------");
         getLogger().info("          QuickBoard          ");
@@ -92,7 +92,7 @@ public class QuickBoard extends JavaPlugin implements Listener {
         getLogger().info("Update Tasks started");
 
         try {
-            getCommand("quickboard").setExecutor(new Commands());
+            getCommand("quickboard").setExecutor(new Commands(this));
             getLogger().info("Command 'quickboard' enabled");
         } catch (NullPointerException ex) {
             getLogger().info("Command 'quickboard' disabled, error was occurred");
@@ -162,8 +162,8 @@ public class QuickBoard extends JavaPlugin implements Listener {
 
         if (boards.containsKey(e.getPlayer())) {
             boards.get(e.getPlayer()).stopTasks();
-            QuickBoard.instance.boards.remove(e.getPlayer());
-            QuickBoard.instance.allboards.remove(this);
+            boards.remove(e.getPlayer());
+            allboards.remove(this);
         }
     }
 
@@ -179,7 +179,7 @@ public class QuickBoard extends JavaPlugin implements Listener {
                         }
                         boards.get(player).createNew(in.getText(), in.getTitle(), in.getTitleUpdate(), in.getTextUpdate());
                     } else {
-                        new PlayerBoard(player, info.get(s));
+                        new PlayerBoard(this, player, info.get(s));
                     }
                     return;
                 }
@@ -265,5 +265,25 @@ public class QuickBoard extends JavaPlugin implements Listener {
                 }
             }
         }.runTaskLater(this, 20);
+    }
+
+    public HashMap<Player, PlayerBoard> getBoards() {
+        return boards;
+    }
+
+    public List<PlayerBoard> getAllboards() {
+        return allboards;
+    }
+
+    public HashMap<String, ScoreboardInfo> getInfo() {
+        return info;
+    }
+
+    public HashMap<Player, Long> getPlayerWorldTimer() {
+        return playerWorldTimer;
+    }
+
+    public PluginUpdater getPluginUpdater() {
+        return pluginUpdater;
     }
 }

@@ -8,43 +8,49 @@ import java.util.List;
 
 public class QuickBoardAPI {
 
+    private static QuickBoard plugin;
+
+    public QuickBoardAPI(QuickBoard plugin) {
+        this.plugin = plugin;
+    }
+
     public static PlayerBoard createBoard(Player player, String name) {
-        if (QuickBoard.instance.info.containsKey(name)) {
-            return new PlayerBoard(player, QuickBoard.instance.info.get(name));
+        if (plugin.getInfo().containsKey(name)) {
+            return new PlayerBoard(plugin, player, plugin.getInfo().get(name));
         }
         return null;
     }
 
     public static PlayerBoard createBoard(Player player, List<String> text, List<String> title, int updateTitle, int updateText) {
-        return new PlayerBoard(player, text, title, updateTitle, updateText);
+        return new PlayerBoard(plugin, player, text, title, updateTitle, updateText);
     }
 
     public static List<PlayerBoard> getBoards() {
-        return QuickBoard.instance.allboards;
+        return plugin.getAllboards();
     }
 
     public static void removeBoard(Player player) {
-        if (QuickBoard.instance.boards.containsKey(player)) {
-            QuickBoard.instance.boards.get(player).remove();
+        if (plugin.getBoards().containsKey(player)) {
+            plugin.getBoards().get(player).remove();
         }
     }
 
     public static void updateText(Player player) {
-        if (QuickBoard.instance.boards.containsKey(player)) {
-            QuickBoard.instance.boards.get(player).updateText();
+        if (plugin.getBoards().containsKey(player)) {
+            plugin.getBoards().get(player).updateText();
         }
     }
 
     public static void updateTitle(Player player) {
-        if (QuickBoard.instance.boards.containsKey(player)) {
-            QuickBoard.instance.boards.get(player).updateTitle();
+        if (plugin.getBoards().containsKey(player)) {
+            plugin.getBoards().get(player).updateTitle();
         }
     }
 
     public static void updateAll(Player player) {
-        if (QuickBoard.instance.boards.containsKey(player)) {
-            QuickBoard.instance.boards.get(player).updateText();
-            QuickBoard.instance.boards.get(player).updateTitle();
+        if (plugin.getBoards().containsKey(player)) {
+            plugin.getBoards().get(player).updateText();
+            plugin.getBoards().get(player).updateTitle();
         }
     }
 }
