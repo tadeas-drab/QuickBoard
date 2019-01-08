@@ -36,7 +36,7 @@ public class PluginUpdater {
 		}
 		updateInfo = response.split(";");
 		System.out.println("Current QuickBoard version: " + plugin.getDescription().getVersion());
-		System.out.println("New QuickBoard version: " + updateInfo[0]);
+		System.out.println("Web QuickBoard version: " + updateInfo[0]);
 
 		if(plugin.getDescription().getVersion().equalsIgnoreCase(updateInfo[0]))
 			return;

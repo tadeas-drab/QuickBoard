@@ -51,6 +51,8 @@ public class Metrics {
     // A list with all custom charts
     private final List<CustomChart> charts = new ArrayList<>();
 
+    private boolean enabled = false;
+
     /**
      * Class constructor.
      *
@@ -94,6 +96,7 @@ public class Metrics {
         serverUUID = config.getString("serverUuid");
         logFailedRequests = config.getBoolean("logFailedRequests", false);
         if (config.getBoolean("enabled", true)) {
+            enabled = true;
             boolean found = false;
             // Search for all other bStats Metrics classes to see if we are the first one
             for (Class<?> service : Bukkit.getServicesManager().getKnownServices()) {
@@ -111,6 +114,14 @@ public class Metrics {
                 startSubmitting();
             }
         }
+    }
+
+    public boolean isEnabled(){
+        return enabled;
+    }
+
+    public JavaPlugin getPlugin() {
+        return plugin;
     }
 
     /**

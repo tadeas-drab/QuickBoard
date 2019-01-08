@@ -146,6 +146,7 @@ public class Commands implements CommandExecutor {
                 sender.sendMessage("§7[§6QuickBoard§7] §cCreating scoreboard failed! Creating scoreboard when player join to server is cancelled!");
                 return true;
             }
+            plugin.disableFirstTimeUse();
             for (Player p : Bukkit.getOnlinePlayers()) {
                 if (plugin.getBoards().containsKey(p)) {
                     plugin.getBoards().get(p).remove();
