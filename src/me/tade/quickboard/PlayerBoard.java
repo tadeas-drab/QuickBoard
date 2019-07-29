@@ -88,7 +88,7 @@ public class PlayerBoard {
         if (plugin.getBoards().containsKey(getPlayer())) {
             plugin.getBoards().get(getPlayer()).remove();
         }
-        ver13 = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3].contains("13");
+        ver13 = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3].contains("13") || Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3].contains("14") || Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3].contains("15");
         colorize();
         titleindex = event.getTitle().size();
         plugin.getBoards().put(getPlayer(), this);
