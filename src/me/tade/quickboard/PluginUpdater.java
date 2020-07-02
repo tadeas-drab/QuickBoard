@@ -31,18 +31,16 @@ public class PluginUpdater {
 		String response = getResponse();
 
 		if(response == null){
-			System.out.println("Some sort of error happend! Can't get new version of QuickBoard!");
+			System.out.println("Some sort of error happened! Can't get new version of QuickBoard!");
 			return;
 		}
 		updateInfo = response.split(";");
-		System.out.println("Current QuickBoard version: " + plugin.getDescription().getVersion());
-		System.out.println("Web QuickBoard version: " + updateInfo[0]);
 
 		if(plugin.getDescription().getVersion().equalsIgnoreCase(updateInfo[0]))
 			return;
 
 		System.out.println(" ");
-		System.out.println("QuickBoard I got new Update!");
+		System.out.println("QuickBoard I got new Update! Check it out on spigot page.");
 
 		needUpdate = true;
 
@@ -51,7 +49,6 @@ public class PluginUpdater {
 
 	public String getResponse(){
 		try {
-			System.out.println("Trying to get new version of QuickBoard...");
 			URL post = new URL("https://raw.githubusercontent.com/TheTadeSK/QuickBoard/master/VERSION");
 
 			String result = get(post);

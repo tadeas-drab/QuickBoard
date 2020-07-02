@@ -1,6 +1,6 @@
 name: QuickBoard
-author: The_TadeSK
-version: 4.3.0
+author: Tejdik
+version: 4.4.0
 main: me.tade.quickboard.QuickBoard
 softdepend: [PlaceholderAPI, MVdWPlaceholders]
 commands:
