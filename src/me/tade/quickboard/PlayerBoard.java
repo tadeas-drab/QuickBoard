@@ -88,14 +88,7 @@ public class PlayerBoard {
         if (plugin.getBoards().containsKey(getPlayer())) {
             plugin.getBoards().get(getPlayer()).remove();
         }
-        ver13 = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3].contains("13")
-                || Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3].contains("14")
-                || Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3].contains("15")
-                || Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3].contains("16")
-                || Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3].contains("17")
-                || Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3].contains("18")
-                || Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3].contains("19")
-                || Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3].contains("20");
+        ver13 = Integer.parseInt(Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3].split("_")[1]) >= 13;
         colorize();
         titleindex = event.getTitle().size();
         plugin.getBoards().put(getPlayer(), this);
