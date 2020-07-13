@@ -31,7 +31,6 @@ public class PluginUpdater {
 		String response = getResponse();
 
 		if(response == null){
-			System.out.println("Some sort of error happened! Can't get new version of QuickBoard!");
 			return;
 		}
 		updateInfo = response.split(";");
@@ -49,12 +48,12 @@ public class PluginUpdater {
 
 	public String getResponse(){
 		try {
-			URL post = new URL("https://raw.githubusercontent.com/TheTadeSK/QuickBoard/master/VERSION");
+			URL post = new URL("https://raw.githubusercontent.com/tadeas-drab/QuickBoard/master/VERSION");
 
 			String result = get(post);
 			return result;
 		} catch (IOException ex) {
-			ex.printStackTrace();
+
 		}
 		return null;
 	}
@@ -77,14 +76,14 @@ public class PluginUpdater {
 
 			return sb.toString();
 		} catch (IOException e) {
-			e.printStackTrace();
+
 		} finally {
 
 			if (br != null) {
 				try {
 					br.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+
 				}
 			}
 		}
